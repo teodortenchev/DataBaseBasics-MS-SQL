@@ -158,3 +158,25 @@ UPDATE Employees
 	WHERE DepartmentID = 1 OR DepartmentID = 2 
 								OR DepartmentID = 4 OR DepartmentID = 11
 	
+--	22.	 All Mountain Peaks
+--Display all mountain peaks in alphabetical order.
+
+SELECT PeakName FROM Peaks ORDER BY PeakName
+
+--23.	 Biggest Countries by Population
+--Find the 30 biggest countries by population from Europe. Display the country name and population. Sort the results by population (from biggest to smallest), then by country alphabetically.
+
+SELECT TOP(30) CountryName, [Population] FROM Countries
+	WHERE ContinentCode = 'EU'
+ORDER BY [Population] DESC, CountryName ASC
+
+SELECT CountryName, CountryCode, Currency = 
+		(
+		 CASE 
+		 WHEN CurrencyCode = 'EUR' THEN 'Euro'
+		 ELSE 'Not Euro'
+		 END
+		)
+FROM Countries
+ORDER BY CountryName
+
