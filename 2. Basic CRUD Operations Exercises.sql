@@ -16,12 +16,12 @@ FROM Employees
 SELECT FirstName + '.' + LastName + '@softuni.bg' AS [Full Email Address]
 FROM Employees
 
---7. Find All Different Employeeís Salaries
+--7. Find All Different Employee‚Äôs Salaries
 SELECT DISTINCT Salary
 FROM Employees
 
 --8.	Find all Information About Employees
---Write a SQL query to find all information about the employees whose job title is ìSales Representativeî. 
+--Write a SQL query to find all information about the employees whose job title is ‚ÄúSales Representative‚Äù. 
 
 SELECT *
 	FROM Employees
@@ -35,7 +35,7 @@ SELECT FirstName, LastName, JobTitle
 WHERE Salary BETWEEN 20000 AND 30000
 
 --10.	 Find Names of All Employees 
---Write a SQL query to find the full name of all employees whose salary is 25000, 14000, 12500 or 23600. Full Name is combination of first, middle and last name (separated with single space) and they should be in one column called ìFull Nameî.
+--Write a SQL query to find the full name of all employees whose salary is 25000, 14000, 12500 or 23600. Full Name is combination of first, middle and last name (separated with single space) and they should be in one column called ‚ÄúFull Name‚Äù.
 
 SELECT FirstName + ' ' + MiddleName + ' ' + LastName AS [Full Name]
 	FROM Employees
@@ -72,10 +72,10 @@ WHERE DepartmentID != 4
 
 --15.	Sort Employees Table
 --	Write a SQL query to sort all records in the Employees table by the following criteria: 
---		ï	First by salary in decreasing order
---		ï	Then by first name alphabetically
---		ï	Then by last name descending
---		ï	Then by middle name alphabetically
+--		‚Ä¢	First by salary in decreasing order
+--		‚Ä¢	Then by first name alphabetically
+--		‚Ä¢	Then by last name descending
+--		‚Ä¢	Then by middle name alphabetically
 
 SELECT * FROM Employees
 ORDER BY Salary DESC, FirstName, LastName DESC, MiddleName
@@ -93,7 +93,7 @@ GO
 SELECT * FROM V_EmployeesSalaries
 
 --17.	Create View Employees with Job Titles
---Write a SQL query to create view V_EmployeeNameJobTitle with full employee name and job title. When middle name is NULL replace it with empty string (ëí).
+--Write a SQL query to create view V_EmployeeNameJobTitle with full employee name and job title. When middle name is NULL replace it with empty string (‚Äò‚Äô).
 
 GO
 
@@ -131,7 +131,7 @@ GO
 SELECT DISTINCT JobTitle
 FROM Employees
 
---19.	Find First 10 Started Projects
+--19.	Find First 10 Started Projects.
 --Write a SQL query to find first 10 started projects. Select all information about them and sort them by start date, then by name.
 
 
