@@ -18,7 +18,7 @@ WHERE LastName LIKE '%ei%'
 
 SELECT FirstName
 	FROM Employees
-WHERE (DepartmentID = 3 OR DepartmentID = 10) AND 
+WHERE DepartmentID IN (3,10) AND 
 			DATEPART(YEAR, HireDate) >= 1995 AND DATEPART(YEAR, HireDate) <=2005
 
 --Problem 4.	Find All Employees Except Engineers
@@ -33,7 +33,7 @@ WHERE JobTitle NOT LIKE '%engineer%'
 
 SELECT [Name] 
 FROM Towns 
-WHERE LEN([Name]) = 5 OR LEN([Name]) = 6
+WHERE LEN([Name]) BETWEEN 5 AND 6
 ORDER BY [Name]
 
 --Problem 6.	 Find Towns Starting With
@@ -83,5 +83,22 @@ SELECT EmployeeID, FirstName, LastName, Salary
 	, DENSE_RANK() OVER
 	(PARTITION BY Salary ORDER BY EmployeeId) AS Rank
 FROM Employees
-	WHERE Salary >= 10000 AND Salary <= 50000
+	WHERE Salary BETWEEN 10000 AND 50000
 		ORDER BY Salary DESC
+
+--Problem 11.	Find All Employees with Rank 2 *
+--Use the query from the previous problem and upgrade it, so that it finds only the employees whose Rank is 2 and again, order them by Salary (descending).
+GO
+
+SELECT * FROM (
+	SELECT EmployeeID, FirstName, LastName, Salary
+	, DENSE_RANK() OVER
+	(PARTITION BY Salary ORDER BY EmployeeId) AS Rank
+	FROM Employees
+	WHERE Salary BETWEEN 10000 AND 50000) AS RankedTable
+
+WHERE Rank = 2
+ORDER BY Salary DESC
+	
+		
+
