@@ -100,7 +100,7 @@ SELECT * FROM (
 WHERE RankedTable.Rank = 2
 ORDER BY Salary DESC
 	
---Problem 12.	Countries Holding ï¿½Aï¿½ 3 or More Times
+--Problem 12.	Countries Holding ‘A’ 3 or More Times
 --Find all countries that holds the letter 'A' in their name at least 3 times (case insensitively), sorted by ISO code. Display the country name and ISO code. 
 
 SELECT CountryName AS [Country Name], IsoCode AS [ISO Code]
@@ -116,7 +116,8 @@ FROM Peaks, Rivers
 WHERE RIGHT(PeakName, 1) = LEFT(RiverName,1)
 ORDER BY Mix
 
---Find the top 50 games ordered by start date, then by name of the game. Display only games from 2011 and 2012 year. Display start date in the format ï¿½yyyy-MM-ddï¿½.
+--Problem 14.	Games from 2011 and 2012 year
+--Find the top 50 games ordered by start date, then by name of the game. Display only games from 2011 and 2012 year. Display start date in the format “yyyy-MM-dd”.
 
 SELECT TOP(50) [Name], FORMAT([Start], 'yyyy-MM-dd') AS [Start] 
 FROM Games
@@ -130,9 +131,39 @@ SELECT Username, SUBSTRING(Email, CHARINDEX('@', Email) +1,LEN(Email)) AS [Email
 FROM Users
 ORDER BY [Email Provider], Username
 
---Find all users along with their IP addresses sorted by username alphabetically. Display only rows that IP address matches the pattern: ï¿½***.1^.^.***ï¿½. 
+--Find all users along with their IP addresses sorted by username alphabetically. Display only rows that IP address matches the pattern: “***.1^.^.***”. 
 
 SELECT Username, IpAddress AS [IP Address]
 FROM Users
 WHERE IpAddress LIKE '___.1%.%.___'
 ORDER BY Username
+
+--Problem 17.	 Show All Games with Duration and Part of the Day
+--Find all games with part of the day and duration sorted by game name alphabetically then by duration (alphabetically, not by the timespan) and part of the day (all ascending). Parts of the day should be Morning (time is >= 0 and < 12), Afternoon (time is >= 12 and < 18), Evening (time is >= 18 and < 24). Duration should be Extra Short (smaller or equal to 3), Short (between 4 and 6 including), Long (greater than 6) and Extra Long (without duration). 
+
+
+SELECT [Name] AS [Game],
+					(
+			CASE 
+				WHEN DATEPART(Hour, [Start]) >= 0 
+					AND DATEPART(Hour, [Start]) < 12 THEN 'Morning'
+				WHEN DATEPART(Hour, [Start]) >= 12
+					AND DATEPART(Hour, [Start]) < 18 THEN 'Afternoon'
+				ELSE 'Evening'
+			END
+			) AS [Part of the Day],
+
+			(
+				CASE 
+				WHEN Duration <= 3 THEN 'Extra Short' 
+				WHEN Duration BETWEEN 4 AND 6 THEN 'Short'
+				WHEN Duration > 6 THEN 'Long'
+				ELSE 'Extra Long'
+			END
+			) AS [Duration]
+FROM Games
+ORDER BY Game, [Duration], [Part of the Day]
+
+SELECT ProductName, OrderDate, [Pay Due] = DATEADD(DAY, 3, OrderDate),
+				[Delivery Due] = DATEADD(MONTH, 1, OrderDate)
+FROM Orders
