@@ -97,8 +97,42 @@ SELECT * FROM (
 	FROM Employees
 	WHERE Salary BETWEEN 10000 AND 50000) AS RankedTable
 
-WHERE Rank = 2
+WHERE RankedTable.Rank = 2
 ORDER BY Salary DESC
 	
-		
+--Problem 12.	Countries Holding �A� 3 or More Times
+--Find all countries that holds the letter 'A' in their name at least 3 times (case insensitively), sorted by ISO code. Display the country name and ISO code. 
 
+SELECT CountryName AS [Country Name], IsoCode AS [ISO Code]
+FROM Countries
+WHERE CountryName LIKE '%a%a%a%'
+ORDER BY IsoCode
+
+--Problem 13.	 Mix of Peak and River Names
+--Combine all peak names with all river names, so that the last letter of each peak name is the same as the first letter of its corresponding river name. Display the peak names, river names, and the obtained mix (mix should be in lowercase). Sort the results by the obtained mix.
+
+SELECT PeakName, RiverName, LOWER(PeakName + SUBSTRING(RiverName,2, LEN(RiverName))) AS Mix
+FROM Peaks, Rivers
+WHERE RIGHT(PeakName, 1) = LEFT(RiverName,1)
+ORDER BY Mix
+
+--Find the top 50 games ordered by start date, then by name of the game. Display only games from 2011 and 2012 year. Display start date in the format �yyyy-MM-dd�.
+
+SELECT TOP(50) [Name], FORMAT([Start], 'yyyy-MM-dd') AS [Start] 
+FROM Games
+WHERE CAST(DATEPART(YEAR, [Start]) AS INT) BETWEEN 2011 AND 2012
+ORDER BY [Start], [Name]
+
+--Problem 15.	 User Email Providers
+--Find all users along with information about their email providers. Display the username and email provider. Sort the results by email provider alphabetically, then by username.
+
+SELECT Username, SUBSTRING(Email, CHARINDEX('@', Email) +1,LEN(Email)) AS [Email Provider]
+FROM Users
+ORDER BY [Email Provider], Username
+
+--Find all users along with their IP addresses sorted by username alphabetically. Display only rows that IP address matches the pattern: �***.1^.^.***�. 
+
+SELECT Username, IpAddress AS [IP Address]
+FROM Users
+WHERE IpAddress LIKE '___.1%.%.___'
+ORDER BY Username
