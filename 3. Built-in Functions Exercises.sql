@@ -125,7 +125,7 @@ WHERE CAST(DATEPART(YEAR, [Start]) AS INT) BETWEEN 2011 AND 2012
 ORDER BY [Start], [Name]
 
 --Problem 15.	 User Email Providers
---Find all users along with information about their email providers. Display the username and email provider. Sort the results by email provider alphabetically, then by username.
+--Find all users along with information about their email providers. Display the username and email provider. Sort the	results by email provider alphabetically, then by username.
 
 SELECT Username, SUBSTRING(Email, CHARINDEX('@', Email) +1,LEN(Email)) AS [Email Provider]
 FROM Users
