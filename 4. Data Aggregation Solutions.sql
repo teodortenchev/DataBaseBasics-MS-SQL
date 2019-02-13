@@ -6,3 +6,10 @@ FROM WizzardDeposits
 SELECT MAX(MagicWandSize) AS LongestMagicWand
 FROM WizzardDeposits
 
+--Problem 3
+SELECT DepositGroup, MAX(MagicWandSize) AS LongestMagicWand
+FROM WizzardDeposits
+GROUP BY DepositGroup
+
+--Problem 4
+
