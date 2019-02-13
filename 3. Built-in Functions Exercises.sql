@@ -167,3 +167,6 @@ ORDER BY Game, [Duration], [Part of the Day]
 SELECT ProductName, OrderDate, [Pay Due] = DATEADD(DAY, 3, OrderDate),
 				[Delivery Due] = DATEADD(MONTH, 1, OrderDate)
 FROM Orders
+
+
+
