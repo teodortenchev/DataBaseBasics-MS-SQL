@@ -105,3 +105,46 @@ SELECT DepartmentId, MIN(Salary)
 	WHERE HireDate > 01/01/2000
  GROUP BY DepartmentID
  HAVING DepartmentID IN (2, 5, 7)
+
+--Problem 15
+SELECT * INTO NewEmployees
+  FROM Employees
+ WHERE Salary > 30000
+
+DELETE FROM NewEmployees WHERE ManagerID = 42
+
+UPDATE NewEmployees
+ SET Salary += 5000
+WHERE DepartmentID = 1
+
+SELECT DepartmentID, AVG(Salary)
+ FROM NewEmployees
+ GROUP BY DepartmentID
+
+--Problem 16
+SELECT DepartmentID, MAX(Salary) AS [MaxSalary]
+  FROM Employees
+ GROUP BY DepartmentID
+  HAVING MAX(Salary) NOT BETWEEN 30000 AND 70000
+
+--Problem 17
+SELECT COUNT(Salary)
+ FROM Employees
+WHERE ManagerID IS NULL
+
+--Problem 18
+SELECT DISTINCT DepartmentId, Salary AS [ThirdHighestSalary] FROM 
+(
+SELECT DepartmentID, DENSE_RANK() OVER (PARTITION BY DepartmentID ORDER BY Salary DESC) AS [Rank], Salary
+FROM Employees) AS RankedSalaries
+ WHERE RankedSalaries.Rank = 3
+
+--Problem 19
+SELECT TOP(10) FirstName, LastName, DepartmentID
+ FROM Employees  AS b
+  WHERE b.Salary > (SELECT AVG(Salary)
+     FROM Employees AS a
+		 WHERE a.DepartmentID = b.DepartmentID
+		 
+		  )
+ORDER BY DepartmentID
