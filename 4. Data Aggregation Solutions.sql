@@ -73,3 +73,24 @@ FROM WizzardDeposits
 GROUP BY LEFT(FirstName, 1), DepositGroup
 HAVING DepositGroup = 'Troll Chest'
 ORDER BY LEFT(FirstName, 1)
+
+--Problem 11
+SELECT DepositGroup, IsDepositExpired, FORMAT(AVG(DepositInterest), 'N2') AS AverageInterest
+FROM WizzardDeposits
+WHERE DepositStartDate > '01/01/1985'
+GROUP BY DepositGroup, IsDepositExpired
+ORDER BY DepositGroup DESC, IsDepositExpired ASC
+
+--Problem 12
+SELECT SUM(wd.Diff) AS SumDifference
+FROM (
+SELECT DepositAmount - LEAD(DepositAmount, 1) OVER (ORDER BY Id) AS [Diff]
+	FROM WizzardDeposits) AS wd
+
+--Problem 12 v2
+SELECT SUM(final.Diff)
+  FROM(
+   SELECT wd1.DepositAmount - (SELECT wd2.DepositAmount FROM WizzardDeposits AS wd2 WHERE Id = wd1.Id + 1) AS [Diff]
+ FROM WizzardDeposits AS wd1) AS final
+
+ --
