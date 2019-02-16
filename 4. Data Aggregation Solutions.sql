@@ -93,4 +93,7 @@ SELECT SUM(final.Diff)
    SELECT wd1.DepositAmount - (SELECT wd2.DepositAmount FROM WizzardDeposits AS wd2 WHERE Id = wd1.Id + 1) AS [Diff]
  FROM WizzardDeposits AS wd1) AS final
 
- --
+ --Problem 13
+SELECT DepartmentID, Sum(Salary) 
+  FROM Employees
+ GROUP BY DepartmentID
