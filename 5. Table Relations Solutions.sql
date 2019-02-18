@@ -32,13 +32,14 @@ INSERT INTO Persons VALUES
 
 --Problem 2
 CREATE TABLE Models (
-   ModelID INT PRIMARY KEY,
+   ModelID INT PRIMARY KEY IDENTITY(101,1),
 	 [Name] VARCHAR(15) NOT NULL,
-	 ManufacturerID INT NOT NULL
+	 ManufacturerID INT FOREIGN KEY REFERENCES Manufacturers(ManufacturerID)
+
 )
 
 CREATE TABLE Manufacturers (
-   ManufacturerID INT PRIMARY KEY,
+   ManufacturerID INT PRIMARY KEY IDENTITY,
 	 [Name] VARCHAR(15) NOT NULL,
 	 EstablishedOn DATE NOT NULL
 )
@@ -47,3 +48,23 @@ ALTER TABLE Models
    ADD CONSTRAINT FK_Models_Manufacturers FOREIGN KEY (ManufacturerID)
 	   REFERENCES Manufacturers(ManufacturerID)
 
+--Problem 3
+
+CREATE TABLE Students (
+  StudentID INT PRIMARY KEY IDENTITY,
+	[Name] VARCHAR(15) NOT NULL,
+)
+
+CREATE TABLE Exams (
+  ExamID INT PRIMARY KEY IDENTITY(101,1),
+	[Name] VARCHAR(15) NOT NULL,
+)
+
+CREATE TABLE StudentsExams (
+  StudentID INT NOT NULL,
+	ExamID INT NOT NULL,
+	CONSTRAINT FK_StudentsExams_Students FOREIGN KEY (StudentID)
+	  REFERENCES Students(StudentID),
+	CONSTRAINT FK_StudentsExams_Exams FOREIGN KEY (ExamID)
+	  REFERENCES Exams(ExamID)
+)
