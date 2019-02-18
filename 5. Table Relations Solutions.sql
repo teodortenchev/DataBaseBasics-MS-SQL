@@ -68,3 +68,6 @@ CREATE TABLE StudentsExams (
 	CONSTRAINT FK_StudentsExams_Exams FOREIGN KEY (ExamID)
 	  REFERENCES Exams(ExamID)
 )
+
+ALTER TABLE StudentsExams
+  ADD CONSTRAINT PK_StudentsExams PRIMARY KEY (StudentID, ExamID)
