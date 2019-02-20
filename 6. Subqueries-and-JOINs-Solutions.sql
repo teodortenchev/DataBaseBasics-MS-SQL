@@ -81,3 +81,57 @@ SELECT e.EmployeeID, e.FirstName,
    WHERE e.ManagerID IN (3, 7)
 ORDER BY e.EmployeeID
 
+--Problem 10 (Concat_WS is not a recognized internal function)
+SELECT TOP(50) e.EmployeeID, CONCAT_WS(' ', e.FirstName, e.LastName) AS EmployeeName,
+               CONCAT_WS(' ', m.FirstName, m.LastName) AS EmployeeName, d.[Name] AS DepartmentName
+          FROM Employees AS e
+          JOIN Employees AS m ON e.ManagerID = m.EmployeeID
+          JOIN Departments AS d ON e.DepartmentID = d.DepartmentID
+      ORDER BY e.EmployeeID 
+
+--Problem 11
+  SELECT MIN(AverageSalary) 
+    FROM (SELECT AVG(Salary) AS AverageSalary FROM Employees
+GROUP BY DepartmentID) AS AvgSalaries
+
+--Problem 12
+  SELECT c.CountryCode, m.MountainRange, p.PeakName, p.Elevation
+    FROM Peaks as p
+    JOIN Mountains as m ON m.Id = p.MountainId
+    JOIN MountainsCountries as mc ON mc.MountainId = m.Id
+    JOIN Countries as c ON c.CountryCode = mc.CountryCode
+   WHERE c.CountryCode = 'BG' AND p.Elevation > 2835
+ORDER BY p.Elevation DESC
+
+--Problem 13
+  SELECT mc.CountryCode, COUNT(*) AS MountainRanges
+    FROM Mountains AS m
+    JOIN MountainsCountries mc on m.ID = mc.MountainId
+   WHERE mc.CountryCode IN ('US','RU','BG')
+GROUP BY mc.CountryCode
+
+
+--Problem 14
+  SELECT TOP(5) c.CountryName, r.RiverName
+           FROM Countries AS c
+LEFT OUTER JOIN CountriesRivers AS cr ON cr.CountryCode = c.CountryCode
+LEFT OUTER JOIN Rivers AS r ON r.Id = cr.RiverId
+          WHERE c.ContinentCode = 'AF'
+          ORDER BY c.CountryName
+--Problem 15
+SELECT tops.ContinentCode, tops.CurrencyCode, 
+       MAX(tops.CurrencyUsage) AS CurrencyUsage
+FROM
+(SELECT c.ContinentCode, c.CurrencyCode, COUNT(CurrencyCode) AS CurrencyUsage
+ FROM Countries as c
+WHERE (
+      SELECT COUNT(*) FROM (
+      SELECT DISTINCT ContinentCode, CurrencyCode
+        FROM Countries
+      WHERE CurrencyCode = c.CurrencyCode
+      ) AS cc
+    ) = 1
+    
+GROUP BY c.ContinentCode, c.CurrencyCode
+) as tops
+GROUP BY tops.ContinentCode
