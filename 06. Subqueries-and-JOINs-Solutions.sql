@@ -44,4 +44,12 @@ LEFT OUTER JOIN EmployeesProjects as ep ON e.EmployeeID = ep.EmployeeID
    WHERE d.Name IN ('Sales', 'Finance') AND e.HireDate > '1.1.1999'
 ORDER BY e.HireDate
 
+--Problem 7
+SELECT TOP(5) e.EmployeeID, e.FirstName, p.[Name]
+         FROM Employees as e
+         JOIN EmployeesProjects as ep ON e.EmployeeID = ep.EmployeeID
+         JOIN Projects as p ON ep.ProjectID = p.ProjectID
+WHERE p.StartDate > '08.13.2002'
+
+
 
