@@ -11,7 +11,7 @@ INNER JOIN Addresses AS adr
 INNER JOIN Addresses AS adr
         ON emp.AddressID = adr.AddressID
 INNER JOIN Towns as t
-        ON adr.TownID = t.TownID
+        ON adr.TownID = t.TownID 
 	ORDER BY emp.FirstName, emp.LastName
 
 --Problem 3
@@ -49,7 +49,32 @@ SELECT TOP(5) e.EmployeeID, e.FirstName, p.[Name]
          FROM Employees as e
          JOIN EmployeesProjects as ep ON e.EmployeeID = ep.EmployeeID
          JOIN Projects as p ON ep.ProjectID = p.ProjectID
-WHERE p.StartDate > '08.13.2002'
+WHERE p.StartDate > '08.13.2002' AND p.EndDate IS NULL
+
+--Problem 8 v1
+SELECT e.EmployeeID, e.FirstName, 
+  CASE
+  WHEN YEAR(p.StartDate) >= 2005 THEN NULL
+  ELSE p.[Name]
+  END
+  FROM Employees as e
+  JOIN EmployeesProjects as ep
+    ON e.EmployeeID = ep.EmployeeID
+  JOIN Projects as p 
+    ON ep.ProjectID = p.ProjectID
+ WHERE e.EmployeeID = 24
+
+--Problem 8 v2
+SELECT e.EmployeeID, e.FirstName, 
+  IIF(YEAR(p.StartDate) >= 2005, NULL, p.[Name])
+  FROM Employees as e
+  JOIN EmployeesProjects as ep
+    ON e.EmployeeID = ep.EmployeeID
+  JOIN Projects as p 
+    ON ep.ProjectID = p.ProjectID
+ WHERE e.EmployeeID = 24
+
+--Problem 9
 
 
 
