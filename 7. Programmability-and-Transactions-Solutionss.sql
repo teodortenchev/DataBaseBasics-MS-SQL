@@ -100,3 +100,40 @@ END
 
 SELECT FirstName FROM Employees
 WHERE dbo.ufn_IsWordComprised('oistmiahf', FirstName) = 1
+
+GO
+--Problem 8
+--alter table Departments to allow null in ManagerID
+--Delete employees from EmployeesProjects
+--update departments set managerid column = null
+--delete from employees where depID = dep
+--delete from dep where id = @id
+
+CREATE OR ALTER PROC usp_DeleteEmployeesFromDepartment 
+       @DepartmentID INT
+AS
+    ALTER TABLE Departments
+    ALTER COLUMN ManagerID INT NULL
+
+    DELETE FROM EmployeesProjects WHERE EmployeeID IN
+        (SELECT EmployeeID FROM Employees WHERE DepartmentID = @DepartmentID)
+
+    UPDATE Departments
+    SET ManagerID = NULL
+    WHERE DepartmentID = @DepartmentID
+
+    UPDATE Employees
+    SET ManagerID = NULL
+    WHERE ManagerID IN 
+        (SELECT EmployeeID FROM Employees WHERE DepartmentID = @DepartmentID)
+
+    DELETE FROM Employees WHERE DepartmentID = @DepartmentID
+
+    DELETE FROM Departments WHERE DepartmentID = @DepartmentID
+
+    SELECT COUNT(*)
+    FROM Employees
+    WHERE DepartmentID = @DepartmentID
+
+EXEC usp_DeleteEmployeesFromDepartment 1
+
