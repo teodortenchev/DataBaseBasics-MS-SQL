@@ -1,4 +1,5 @@
 --Problem 1
+USE SoftUni
 CREATE PROCEDURE dbo.usp_GetEmployeesSalaryAbove35000
 AS
   SELECT FirstName, LastName
@@ -137,3 +138,30 @@ AS
 
 EXEC usp_DeleteEmployeesFromDepartment 1
 
+GO
+--Problem 9
+USE Bank
+
+CREATE PROC usp_GetHoldersFullName
+AS
+  SELECT FirstName + ' ' + LastName AS [Full Name]
+  FROM AccountHolders
+
+GO
+--Problem 10
+CREATE OR ALTER PROC usp_GetHoldersWithBalanceHigherThan
+        @BalanceLimit MONEY
+AS
+  SELECT ah.FirstName, ah.LastName
+  FROM AccountHolders as ah
+  WHERE (SELECT SUM(a.Balance) as [Total]
+ FROM AccountHolders as ab
+JOIN Accounts as a ON a.AccountHolderId = ah.Id
+GROUP BY FirstName
+HAVING ab.FirstName = ah.FirstName) > @BalanceLimit
+  Order BY FirstName, LastName
+
+EXEC usp_GetHoldersWithBalanceHigherThan 1000000
+
+
+  
