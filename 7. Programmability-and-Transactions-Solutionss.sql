@@ -28,3 +28,75 @@ AS
    WHERE [Name] LIKE @TownStartsWith + '%'
 
 EXEC usp_GetTownsStartingWith 'b'
+
+GO
+--Problem 4
+CREATE PROC usp_GetEmployeesFromTown 
+    @TownName varchar(30)
+AS
+    SELECT e.FirstName, e.LastName
+    FROM Employees as e
+    JOIN Addresses as a ON a.AddressID = e.AddressID
+    JOIN Towns as t ON t.TownID = a.TownID
+    WHERE t.[Name] = @TownName
+
+EXEC usp_GetEmployeesFromTown 'Sofia'
+
+GO
+--Problem 5
+CREATE FUNCTION ufn_GetSalaryLevel(@Salary DECIMAL(18,4)) 
+       RETURNS VARCHAR(10)
+AS
+BEGIN
+    DECLARE @salaryLevel VARCHAR(10);
+    IF(@Salary < 30000)
+      SET @salaryLevel = 'Low';
+    ELSE IF(@Salary <= 50000)
+      SET @salaryLevel = 'Average';
+    ELSE 
+      SET @salaryLevel = 'High';
+
+    RETURN @salaryLevel;
+END
+
+SELECT Salary, dbo.ufn_GetSalaryLevel(Salary)
+FROM Employees
+
+GO
+--Problem 6
+CREATE PROC usp_EmployeesBySalaryLevel 
+    @SalaryLevel VARCHAR(10)
+AS
+  SELECT FirstName, LastName
+  FROM Employees
+  WHERE dbo.ufn_GetSalaryLevel(Salary) = @SalaryLevel
+
+EXEC usp_EmployeesBySalaryLevel 'High'
+
+GO
+--Problem 7
+CREATE FUNCTION ufn_IsWordComprised(@SetOfLetters VARCHAR(15), @Word VARCHAR(20))
+      RETURNS BIT
+AS
+BEGIN
+    DECLARE @counter INT = 1
+    WHILE @counter <= LEN(@Word)
+    BEGIN
+      DECLARE @currentLetter CHAR(1) = SUBSTRING(@Word,@counter,1)
+      DECLARE @charIndex INT = CHARINDEX(@currentLetter, @SetOfLetters)
+      
+      IF(@charIndex = 0)
+        BEGIN
+          RETURN 0
+        END
+
+      SET @counter += 1
+    END
+
+  
+    RETURN 1
+END
+
+
+SELECT FirstName FROM Employees
+WHERE dbo.ufn_IsWordComprised('oistmiahf', FirstName) = 1
