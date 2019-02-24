@@ -163,5 +163,46 @@ HAVING ab.FirstName = ah.FirstName) > @BalanceLimit
 
 EXEC usp_GetHoldersWithBalanceHigherThan 1000000
 
+GO
+--Problem 11
+CREATE FUNCTION ufn_CalculateFutureValue 
+                (@InitialSum DECIMAL(18,4), @YearlyInterestRate FLOAT, @YearsCount INT)
+RETURNS DECIMAL(18,4)
 
-  
+BEGIN
+  DECLARE @futureValue DECIMAL(18,4)
+  SET @futureValue = @InitialSum * (POWER((1 + @YearlyInterestRate), @YearsCount))
+
+  RETURN @futureValue
+END
+
+SELECT dbo.ufn_CalculateFutureValue (1000, 0.1, 5)
+
+GO
+--Problem 12
+CREATE PROC usp_CalculateFutureValueForAccount 
+            @AccountId INT, @InterestRate FLOAT
+AS
+SELECT a.AccountHolderId as [Account Id], ah.FirstName as [First Name], 
+       ah.LastName as [Last Name], a.Balance as [Current Balance],
+       dbo.ufn_CalculateFutureValue (a.Balance, @InterestRate, 5) as [Balance in 5 years]
+FROM Accounts as a
+JOIN AccountHolders ah ON ah.Id = a.AccountHolderId
+WHERE a.Id = @AccountId
+
+
+EXEC usp_CalculateFutureValueForAccount 1, 0.1
+
+GO
+--Problem 13
+USE Diablo
+
+CREATE FUNCTION ufn_CashInUsersGames (@GameName)
+RETURNS TABLE AS
+
+RETURN
+(
+    SELECT * 
+    FROM Games
+
+)
