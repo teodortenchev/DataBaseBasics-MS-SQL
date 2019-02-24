@@ -149,17 +149,17 @@ AS
 
 GO
 --Problem 10
-CREATE OR ALTER PROC usp_GetHoldersWithBalanceHigherThan
+CREATE PROC usp_GetHoldersWithBalanceHigherThan
         @BalanceLimit MONEY
 AS
+SELECT k.FirstName, k.LastName
+FROM (
   SELECT ah.FirstName, ah.LastName
-  FROM AccountHolders as ah
-  WHERE (SELECT SUM(a.Balance) as [Total]
- FROM AccountHolders as ab
-JOIN Accounts as a ON a.AccountHolderId = ah.Id
-GROUP BY FirstName
-HAVING ab.FirstName = ah.FirstName) > @BalanceLimit
-  Order BY FirstName, LastName
+  FROM AccountHolders AS ah
+  JOIN Accounts AS a ON a.AccountHolderId = ah.Id
+  GROUP BY ah.ID, ah.FirstName, ah.LastName
+  HAVING SUM(a.Balance) > @BalanceLimit ) as k
+ORDER BY k.FirstName, k.LastName
 
 EXEC usp_GetHoldersWithBalanceHigherThan 1000000
 
@@ -196,13 +196,21 @@ EXEC usp_CalculateFutureValueForAccount 1, 0.1
 GO
 --Problem 13
 USE Diablo
+GO
 
-CREATE FUNCTION ufn_CashInUsersGames (@GameName)
+CREATE FUNCTION ufn_CashInUsersGames (@GameName NVARCHAR(50))
 RETURNS TABLE AS
 
 RETURN
 (
-    SELECT * 
-    FROM Games
-
+    SELECT SUM(k.Cash) AS SumCash
+    FROM (
+    SELECT g.Name, ug.Cash, ROW_NUMBER() OVER(ORDER BY ug.Cash DESC) AS [Row]
+    FROM Games AS g
+    JOIN UsersGames AS ug ON ug.GameId = g.Id
+    WHERE g.[Name] = @GameName) AS k
+    WHERE k.[Row] % 2 = 1
+    
 )
+
+SELECT * FROM dbo.ufn_CashInUsersGames('Love in a mist')
