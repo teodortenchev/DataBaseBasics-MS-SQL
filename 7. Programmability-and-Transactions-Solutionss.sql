@@ -214,3 +214,15 @@ RETURN
 )
 
 SELECT * FROM dbo.ufn_CashInUsersGames('Love in a mist')
+GO
+--Problem 14
+CREATE TABLE Logs (
+             LogID INT PRIMARY KEY IDENTITY,
+             AccountId INT FOREIGN KEY REFERENCES Accounts(Id),
+             OldSum DECIMAL(15,2),
+             NewSum DECIMAL(15,2),
+             )
+GO
+CREATE TRIGGER tr_AccountSumUpdate ON Accounts FOR UPDATE
+AS
+  
