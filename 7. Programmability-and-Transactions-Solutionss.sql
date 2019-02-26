@@ -216,6 +216,7 @@ RETURN
 SELECT * FROM dbo.ufn_CashInUsersGames('Love in a mist')
 GO
 --Problem 14
+
 CREATE TABLE Logs (
              LogID INT PRIMARY KEY IDENTITY,
              AccountId INT FOREIGN KEY REFERENCES Accounts(Id),
@@ -223,6 +224,34 @@ CREATE TABLE Logs (
              NewSum DECIMAL(15,2),
              )
 GO
+
 CREATE TRIGGER tr_AccountSumUpdate ON Accounts FOR UPDATE
 AS
-  
+   DECLARE @newSum DECIMAL(15,2) = (SELECT Balance FROM inserted)
+   DECLARE @oldSum DECIMAL(15,2) = (SELECT Balance FROM deleted)
+   DECLARE @accountId INT = (SELECT Id FROM inserted)
+   INSERT INTO Logs VALUES
+   (@accountID, @oldSum, @newSum)
+   
+GO
+--Problem 15
+CREATE TABLE NotificationEmails (
+             Id INT PRIMARY KEY IDENTITY,
+             Recipient INT,
+             [Subject] VARCHAR(100),
+             Body VARCHAR(150)
+)
+GO
+
+CREATE TRIGGER tr_EmailOnBalanceChange ON Logs AFTER INSERT
+AS
+  DECLARE @accountId INT = (SELECT AccountId FROM inserted)
+  DECLARE @oldSum DECIMAL(15,2) = (SELECT OldSum FROM inserted)
+  DECLARE @newSum DECIMAL(15,2) = (SELECT NewSum FROM inserted)
+  DECLARE @subject VARCHAR(100) = 'Balance change for account: ' + CAST(@accountId AS VARCHAR(10))
+  DECLARE @currentTime DATETIME = GETDATE()
+  DECLARE @body VARCHAR(150) = ('On ' + CAST(@currentTime AS VARCHAR(18)) + ' your balance was changed from '
+                + CAST(@oldSum AS VARCHAR(18)) + ' to ' + CAST(@newSum AS VARCHAR(18)) + '.')
+
+  INSERT INTO NotificationEmails (Recipient, [Subject], Body) VALUES
+  (@accountId, @subject, @body)
