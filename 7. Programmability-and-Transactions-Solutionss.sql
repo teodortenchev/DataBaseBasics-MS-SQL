@@ -255,3 +255,92 @@ AS
 
   INSERT INTO NotificationEmails (Recipient, [Subject], Body) VALUES
   (@accountId, @subject, @body)
+
+  GO
+  --Problem 16
+  CREATE OR ALTER PROC usp_DepositMoney 
+                    @AccountID INT, @MoneyAmount DECIMAL(16,4)
+AS 
+  BEGIN TRANSACTION
+  
+  DECLARE @account INT = (SELECT Id FROM Accounts WHERE Id = @AccountID)
+
+  IF (@account is NULL)
+    BEGIN
+      ROLLBACK
+      RAISERROR('Account does not exist', 16, 1)
+    RETURN
+    END
+  IF (@MoneyAmount < 0)
+    BEGIN 
+      ROLLBACK
+      RAISERROR('Can only deposit a positive amount.', 16, 2)
+      RETURN
+    END
+
+   UPDATE Accounts SET Balance += @MoneyAmount WHERE Id = @AccountID
+  COMMIT
+
+SELECT * FROM Accounts WHERE Id = 1
+exec dbo.usp_DepositMoney 1, 10
+
+--Problem 17
+CREATE PROC usp_WithdrawMoney
+                  @AccountID INT, @MoneyAmount DECIMAL(16,4)
+AS
+  BEGIN TRANSACTION
+    DECLARE @account INT = (SELECT Id FROM Accounts WHERE Id = @AccountID)
+    DECLARE @balance DECIMAL(16,4) = (SELECT Balance FROM Accounts WHERE Id = @AccountID)
+
+    IF(@account IS NULL)
+      BEGIN
+        ROLLBACK
+        RAISERROR('Account does not exist', 16, 1)
+        RETURN
+      END
+    IF(@MoneyAmount <= 0)
+      BEGIN
+        ROLLBACK
+        RAISERROR('Cannot withdral 0 or negative amount', 16, 2)
+        RETURN
+      END
+    IF(@MoneyAmount > @balance)
+      BEGIN
+        ROLLBACK
+        RAISERROR('Insufficient funds. Withdrawal failed.', 16, 2)
+        RETURN
+      END
+    
+    UPDATE Accounts SET Balance -= @MoneyAmount WHERE Id = @AccountID
+  COMMIT
+
+GO
+--Problem 18
+CREATE PROC usp_TransferMoney
+                @SenderId INT, @ReceiverID INT, @Amount DECIMAL(16,4)
+AS
+  BEGIN TRANSACTION
+  DECLARE @senderAccount INT = (SELECT Id FROM Accounts WHERE Id = @SenderId)
+  DECLARE @recipientAccount INT = (SELECT Id FROM Accounts WHERE Id = @ReceiverID)
+
+  IF(@senderAccount IS NULL)
+    BEGIN
+        ROLLBACK
+        RAISERROR('Sender does not exist', 16, 2)
+        RETURN
+    END
+  IF(@recipientAccount IS NULL)
+    BEGIN
+        ROLLBACK
+        RAISERROR('Recipient does not exist', 16, 2)
+        RETURN
+    END
+
+  EXECUTE dbo.usp_WithdrawMoney @SenderID, @Amount
+  EXECUTE dbo.usp_DepositMoney @ReceiverID, @Amount
+
+  COMMIT
+
+EXECUTE usp_TransferMoney 5, 1, 5000
+
+SELECT * FROM Accounts WHERE Id IN (1,5)
