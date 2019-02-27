@@ -344,3 +344,22 @@ AS
 EXECUTE usp_TransferMoney 5, 1, 5000
 
 SELECT * FROM Accounts WHERE Id IN (1,5)
+
+--Problem 21
+CREATE PROC usp_AssignProject
+                      @EmployeeID INT, @ProjectID INT
+AS
+  BEGIN TRANSACTION
+    INSERT INTO EmployeesProjects VALUES
+    (@EmployeeID, @ProjectID)
+    
+    DECLARE @projectsCount INT = (
+    SELECT COUNT(*) FROM EmployeesProjects WHERE EmployeeID = @EmployeeID)
+
+    IF(@projectsCount > 3)
+      BEGIN
+        ROLLBACK
+        RAISERROR('The employee has too many projects!', 16, 1)
+        RETURN
+      END
+  COMMIT
