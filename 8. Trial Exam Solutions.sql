@@ -117,3 +117,25 @@ GROUP BY e.Id, e.FirstName, e.LastName
 ORDER BY e.Id
 
 --P12. Lazy Employees
+SELECT h.Id, h.FirstName + ' ' + h.LastName as [Full Name]
+FROM (
+      SELECT e.Id, e.FirstName, e.LastName, 
+             DATEDIFF(HOUR, s.CheckIn, s.CheckOut) as [Total hours] 
+        FROM Employees as e
+        JOIN Shifts as s ON s.EmployeeId = e.Id
+      ) as h
+WHERE (h.[Total hours]) < 4 
+GROUP BY h.Id, h.FirstName, h.LastName
+ORDER BY h.Id
+
+--P13. Sellers
+SELECT TOP (10) a.[Full Name], SUM(a.Price) as [Total Price], SUM(a.Quantity) as Items
+FROM (
+      SELECT e.FirstName + ' ' + e.LastName as [Full Name], i.Price * oi.Quantity as [Price], oi.Quantity as [Quantity], o.[DateTime] as [Date]  FROM Employees as e
+      JOIN Orders as o ON o.EmployeeId = e.Id
+      JOIN OrderItems as oi ON oi.OrderId = o.Id
+      JOIN Items as i ON i.Id = oi.ItemId
+      WHERE o.[DateTime] < '2018-06-15'
+) as a
+GROUP BY a.[Full Name]
+ORDER BY [Total Price] DESC
