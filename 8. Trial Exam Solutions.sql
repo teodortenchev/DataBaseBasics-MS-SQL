@@ -186,32 +186,47 @@ LEFT JOIN OrderItems as oi ON oi.ItemId = i.Id
 --Section 4. Programmability (20 pts)
 --P18. Promotion Days 
 GO
-CREATE OR ALTER FUNCTION dbo.udf_GetPromotedProducts 
+CREATE FUNCTION dbo.udf_GetPromotedProducts 
            (@CurrentDate DateTime, @StartDate DateTime, 
-            @EndDate DateTime, @Discount FLOAT, @FirstItemId INT, 
+            @EndDate DateTime, @Discount DECIMAL(15,2), @FirstItemId INT, 
             @SecondItemId INT, @ThirdItemId INT) 
 RETURNS VARCHAR(150)
 AS
   BEGIN
-    DECLARE @firstItem INT = (SELECT Id FROM Items WHERE Id = @FirstItemId)
-    DECLARE @secondItem INT = (SELECT Id FROM Items WHERE Id = @SecondItemId)
-    DECLARE @thirdItem INT = (SELECT Id FROM Items WHERE Id = @ThirdItemId)
+    DECLARE @firstItemName VARCHAR(20) = (SELECT [Name] FROM Items WHERE Id = @FirstItemId)
+    DECLARE @secondItemName VARCHAR(20) = (SELECT [Name] FROM Items WHERE Id = @SecondItemId)
+    DECLARE @thirdItemName VARCHAR(20) = (SELECT [Name] FROM Items WHERE Id = @ThirdItemId)
 
     IF(@CurrentDate NOT BETWEEN @StartDate AND @EndDate)
       BEGIN
         RETURN 'The current date is not within the promotion dates!'
       END
-    IF(@firstItem IS NULL OR @secondItem IS NULL OR @thirdItem is NULL)
+    IF(@firstItemName IS NULL OR @secondItemName IS NULL OR @thirdItemName is NULL)
       BEGIN
-        RETURN 'One of the items does not exists!'
+        RETURN 'One of the items does not exist!'
       END
     
-    DECLARE @firstItemName VARCHAR(20) = (SELECT [Name] FROM Items WHERE Id = @FirstItemId)
-    DECLARE @secondItemName VARCHAR(20) = (SELECT [Name] FROM Items WHERE Id = @SecondItemId)
-    DECLARE @thirdItemName VARCHAR(20) = (SELECT [Name] FROM Items WHERE Id = @ThirdItemId)
+    DECLARE @price1 DECIMAL(15,2) = (SELECT Price FROM Items WHERE Id = @FirstItemId)
+    SET @price1 -= @price1 * (@Discount / 100)
 
-    DECLARE @result VARCHAR(150) = ''
+    DECLARE @price2 DECIMAL(15,2) = (SELECT Price FROM Items WHERE Id = @SecondItemId)
+    SET @price2 -= @price2 * (@Discount / 100)
+
+    DECLARE @price3 DECIMAL(15,2) = (SELECT Price FROM Items WHERE Id = @ThirdItemId)
+    SET @price3 -= @price3 * (@Discount / 100)
+
+    DECLARE @result VARCHAR(150) = @firstItemName +' price: ' 
+      + CAST(@price1 AS VARCHAR(10)) +' <-> ' + @secondItemName +' price: ' 
+      + CAST(@price2 AS VARCHAR(10)) +' <-> ' + @thirdItemName +' price: ' 
+      + CAST(@price3 AS VARCHAR(10))
     
       
-  RETURN 'a'
+  RETURN @result
   END
+
+ GO
+ --P19. Cancel Order
+CREATE PROC usp_CancelOrder
+                  @OrderId INT, @CancelDate DATETIME
+AS
+
