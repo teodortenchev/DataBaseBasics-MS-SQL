@@ -182,3 +182,21 @@ ORDER BY [Day]
 LEFT JOIN OrderItems as oi ON oi.ItemId = i.Id
  GROUP BY i.[Name], c.[Name]
  ORDER BY TotalPrice DESC, [Count] DESC
+
+--Section 4. Programmability (20 pts)
+--P18. Promotion Days
+GO
+CREATE FUNCTION dbo.udf_GetPromotedProducts 
+           (@CurrentDate DateTime, @StartDate DateTime, 
+            @EndDate DateTime, @Discount FLOAT, @FirstItemId INT, 
+            @SecondItemId INT, @ThirdItemId INT) 
+RETURNS VARCHAR(150)
+AS
+  BEGIN
+    IF(@CurrentDate NOT BETWEEN @StartDate AND @EndDate)
+      BEGIN
+        RETURN 'The current date is not within the promotion dates!'
+      END
+  RETURN 'a'
+  END
+
