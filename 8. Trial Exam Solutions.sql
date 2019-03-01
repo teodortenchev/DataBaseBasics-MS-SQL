@@ -149,16 +149,18 @@ WHERE o.Id IS NULL AND DATEDIFF(HOUR, s.CheckIn, s.CheckOut) > 12
 ORDER BY e.Id
 
 --P15. Top Order per Employee
-SELECT e.FirstName + ' ' + e.LastName as [Full Name], DATEDIFF(HOUR, s.CheckIn, s.CheckOut) as WorkHours, a.TotalPrice
+SELECT k.[Full Name], DATEDIFF(HOUR,s.CheckIn,s.CheckOut) as WorkHours,
+       k.TotalPrice
 FROM (
-  SELECT o.EmployeeId, SUM(i.Price * oi.Quantity) as TotalPrice, 
-         o.DateTime as OrderTime, ROW_NUMBER() OVER (PARTITION BY o.EmployeeId ORDER BY SUM(i.Price * oi.Quantity) DESC) as Rank
-  FROM Orders as o
-  JOIN OrderItems as oi ON oi.OrderId = o.Id
-  JOIN Items as i ON i.Id = oi.ItemId
-  GROUP BY o.EmployeeId, o.Id, o.DateTime
-) as a
-JOIN Employees as e ON e.Id = a.EmployeeId
-JOIN Shifts as s ON s.EmployeeId = e.Id
-WHERE a.Rank = 1 AND a.OrderTime BETWEEN s.CheckIn AND s.CheckOut
-ORDER BY [Full Name], WorkHours DESC, TotalPrice DESC
+      SELECT e.FirstName + ' ' + e.LastName as [Full Name], 
+             SUM(oi.Quantity * i.Price) as TotalPrice, 
+             ROW_NUMBER() OVER(PARTITION BY e.Id ORDER BY SUM(oi.Quantity * i.Price) DESC) as Rank, o.DateTime as OrderTime, e.Id as EmpId
+      FROM Employees as e
+      JOIN Orders as o ON o.EmployeeId = e.Id
+      JOIN OrderItems as oi ON oi.OrderId = o.Id
+      JOIN Items as i ON i.Id = oi.ItemId
+      GROUP BY o.Id, e.Id, e.FirstName, e.LastName, o.DateTime
+) as k
+JOIN Shifts as s ON s.EmployeeId = k.EmpId
+WHERE k.Rank = 1 AND k.OrderTime BETWEEN s.CheckIn AND s.CheckOut
+ORDER BY k.[Full Name], WorkHours DESC, k.TotalPrice DESC
