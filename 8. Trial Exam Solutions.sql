@@ -175,3 +175,9 @@ GROUP BY DAY(o.DateTime)
 ORDER BY [Day]
 
 --P16. Average Profit per Day
+SELECT i.[Name], c.[Name], SUM(oi.Quantity) as [Count], (SUM(oi.Quantity) * i.Price) as TotalPrice
+FROM Items as i
+JOIN Categories as c ON c.Id = i.CategoryId
+JOIN OrderItems as oi ON oi.ItemId = i.Id
+GROUP BY i.[Name], c.[Name], i.Price
+ORDER BY TotalPrice DESC, [Count] DESC
