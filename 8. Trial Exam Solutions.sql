@@ -184,19 +184,34 @@ LEFT JOIN OrderItems as oi ON oi.ItemId = i.Id
  ORDER BY TotalPrice DESC, [Count] DESC
 
 --Section 4. Programmability (20 pts)
---P18. Promotion Days
+--P18. Promotion Days 
 GO
-CREATE FUNCTION dbo.udf_GetPromotedProducts 
+CREATE OR ALTER FUNCTION dbo.udf_GetPromotedProducts 
            (@CurrentDate DateTime, @StartDate DateTime, 
             @EndDate DateTime, @Discount FLOAT, @FirstItemId INT, 
             @SecondItemId INT, @ThirdItemId INT) 
 RETURNS VARCHAR(150)
 AS
   BEGIN
+    DECLARE @firstItem INT = (SELECT Id FROM Items WHERE Id = @FirstItemId)
+    DECLARE @secondItem INT = (SELECT Id FROM Items WHERE Id = @SecondItemId)
+    DECLARE @thirdItem INT = (SELECT Id FROM Items WHERE Id = @ThirdItemId)
+
     IF(@CurrentDate NOT BETWEEN @StartDate AND @EndDate)
       BEGIN
         RETURN 'The current date is not within the promotion dates!'
       END
+    IF(@firstItem IS NULL OR @secondItem IS NULL OR @thirdItem is NULL)
+      BEGIN
+        RETURN 'One of the items does not exists!'
+      END
+    
+    DECLARE @firstItemName VARCHAR(20) = (SELECT [Name] FROM Items WHERE Id = @FirstItemId)
+    DECLARE @secondItemName VARCHAR(20) = (SELECT [Name] FROM Items WHERE Id = @SecondItemId)
+    DECLARE @thirdItemName VARCHAR(20) = (SELECT [Name] FROM Items WHERE Id = @ThirdItemId)
+
+    DECLARE @result VARCHAR(150) = ''
+    
+      
   RETURN 'a'
   END
-
