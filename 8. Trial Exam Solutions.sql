@@ -174,7 +174,7 @@ JOIN Items as i ON i.Id = oi.ItemId
 GROUP BY DAY(o.DateTime)
 ORDER BY [Day]
 
---P16. Average Profit per Day
+--P17. Top Products
    SELECT i.[Name] as Item, c.[Name] as Category, SUM(oi.Quantity) as [Count], 
           SUM(oi.Quantity * i.Price) as TotalPrice
      FROM Items as i
