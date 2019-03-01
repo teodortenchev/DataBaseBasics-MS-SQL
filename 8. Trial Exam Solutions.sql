@@ -149,10 +149,15 @@ WHERE o.Id IS NULL AND DATEDIFF(HOUR, s.CheckIn, s.CheckOut) > 12
 ORDER BY e.Id
 
 --P15. Top Order per Employee
-SELECT e.FirstName + ' ' + e.LastName as [Full Name], 
-       DATEDIFF(HOUR, s.CheckIn, s.CheckOut) as WorkHours 
-FROM Employees as e
+SELECT e.FirstName + ' ' + e.LastName as [Full Name], MAX(a.TotalPrice) 
+FROM (
+  SELECT o.EmployeeId, SUM(i.Price * oi.Quantity) as TotalPrice, 
+         o.DateTime as OrderTime 
+  FROM Orders as o
+  JOIN OrderItems as oi ON oi.OrderId = o.Id
+  JOIN Items as i ON i.Id = oi.ItemId
+  GROUP BY o.EmployeeId, o.Id, o.DateTime
+) as a
+JOIN Employees as e ON e.Id = a.EmployeeId
 JOIN Shifts as s ON s.EmployeeId = e.Id
-JOIN Orders as o ON o.EmployeeId = e.Id
-JOIN OrderItems as oi ON oi.OrderId = o.Id
-JOIN Items as i ON i.Id = oi.ItemId
+
