@@ -139,3 +139,20 @@ FROM (
 ) as a
 GROUP BY a.[Full Name]
 ORDER BY [Total Price] DESC
+
+--P14. Tough days
+SELECT e.FirstName + ' ' + e.LastName as [Full Name], FORMAT(s.CheckIn, 'dddd') as [Day of Week]
+FROM Employees as e
+LEFT JOIN Orders as o ON o.EmployeeId = e.Id
+JOIN Shifts as s ON s.EmployeeId = e.Id
+WHERE o.Id IS NULL AND DATEDIFF(HOUR, s.CheckIn, s.CheckOut) > 12
+ORDER BY e.Id
+
+--P15. Top Order per Employee
+SELECT e.FirstName + ' ' + e.LastName as [Full Name], 
+       DATEDIFF(HOUR, s.CheckIn, s.CheckOut) as WorkHours 
+FROM Employees as e
+JOIN Shifts as s ON s.EmployeeId = e.Id
+JOIN Orders as o ON o.EmployeeId = e.Id
+JOIN OrderItems as oi ON oi.OrderId = o.Id
+JOIN Items as i ON i.Id = oi.ItemId
