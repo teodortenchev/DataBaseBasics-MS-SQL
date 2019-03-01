@@ -83,5 +83,37 @@ ORDER BY FirstName, Phone
 --P7. Employee Statistics
 SELECT e.FirstName, e.LastName, COUNT(o.ID) AS Count FROM Employees AS e
 JOIN Orders AS o ON o.EmployeeId = e.Id
-Group BY e.Id, e.FirstName, e.LastName
+GROUP BY e.Id, e.FirstName, e.LastName
 ORDER BY COUNT(o.ID) DESC, e.FirstName
+
+--P8. Hard Workers Club
+SELECT h.FirstName, h.LastName, AVG(h.[Total hours]) as [Work hours]
+FROM (
+      SELECT e.Id, e.FirstName, e.LastName, 
+             DATEDIFF(HOUR, s.CheckIn, s.CheckOut) as [Total hours] 
+        FROM Employees as e
+        JOIN Shifts as s ON s.EmployeeId = e.Id
+      ) as h
+GROUP BY h.Id, h.FirstName, h.LastName
+HAVING AVG(h.[Total hours]) > 7
+ORDER BY [Work hours] DESC, h.Id
+
+--P9. The most expensive order
+SELECT TOP(1) oi.OrderId, SUM(i.Price * oi.Quantity) as [Total Price] FROM OrderItems as oi
+JOIN Items as i ON i.Id = oi.ItemId
+GROUP BY oi.OrderId
+ORDER BY SUM(i.Price * oi.Quantity) DESC
+
+--P10. Rich Item, Poor Item
+SELECT TOP(10) oi.OrderId, MAX(i.Price) AS [ExpensivePrice], MIN(i.Price) AS [CheapPrice] FROM OrderItems as oi
+JOIN Items as i ON i.Id = oi.ItemId
+GROUP BY oi.OrderId
+ORDER BY [ExpensivePrice] DESC, oi.OrderId
+
+--P11. Cashiers
+SELECT e.Id, e.FirstName, e.LastName FROM Employees as e
+JOIN Orders as o ON o.EmployeeId = e.Id
+GROUP BY e.Id, e.FirstName, e.LastName
+ORDER BY e.Id
+
+--P12. Lazy Employees
