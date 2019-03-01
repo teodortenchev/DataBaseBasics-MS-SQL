@@ -1,5 +1,6 @@
 --Section 1 - Data Definition Language (30pts)
 CREATE DATABASE Supermarket
+USE Supermarket
 
 CREATE TABLE Categories(
         Id INT PRIMARY KEY IDENTITY,
@@ -67,3 +68,20 @@ UPDATE Items SET Price *= 1.27 WHERE CategoryId IN (1,2,3)
 
 --Problem 4. Delete
 DELETE FROM OrderItems WHERE OrderId = 48
+
+--Section 3. Querying (40 pts)
+--P5. Richest PEOPLE
+
+SELECT Id, FirstName FROM Employees WHERE Salary > 6500 ORDER BY FirstName, Id
+
+--P6. Cool Phone Numbers
+  SELECT FirstName + ' ' + LastName AS [Full Name], Phone 
+    FROM Employees 
+   WHERE Phone LIKE '3%' 
+ORDER BY FirstName, Phone
+
+--P7. Employee Statistics
+SELECT e.FirstName, e.LastName, COUNT(o.ID) AS Count FROM Employees AS e
+JOIN Orders AS o ON o.EmployeeId = e.Id
+Group BY e.Id, e.FirstName, e.LastName
+ORDER BY COUNT(o.ID) DESC, e.FirstName
