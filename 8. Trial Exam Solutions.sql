@@ -164,3 +164,14 @@ FROM (
 JOIN Shifts as s ON s.EmployeeId = k.EmpId
 WHERE k.Rank = 1 AND k.OrderTime BETWEEN s.CheckIn AND s.CheckOut
 ORDER BY k.[Full Name], WorkHours DESC, k.TotalPrice DESC
+
+--P16. Average Profit per Day
+SELECT DAY(o.DateTime) as [Day], 
+       CONVERT(DECIMAL(10,2), AVG(oi.Quantity * i.Price)) as [Average Profit]
+FROM Orders as o
+JOIN OrderItems as oi ON oi.OrderId = o.Id
+JOIN Items as i ON i.Id = oi.ItemId
+GROUP BY DAY(o.DateTime)
+ORDER BY [Day]
+
+--P16. Average Profit per Day
