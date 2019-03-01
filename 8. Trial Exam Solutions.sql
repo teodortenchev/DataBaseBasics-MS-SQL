@@ -249,4 +249,23 @@ AS
   DELETE FROM Orders WHERE Id = @OrderId
 
 
+--P20. Deleted Order
 
+CREATE TABLE DeletedOrders(
+      OrderId INT,
+      ItemId INT,
+      ItemQuantity INT
+)
+
+GO
+
+CREATE TRIGGER tr_LogDeletedOrders ON OrderItems AFTER DELETE
+AS
+  INSERT INTO DeletedOrders
+      SELECT OrderId, ItemId, Quantity FROM deleted
+ 
+
+ DELETE FROM OrderItems WHERE OrderId = 4
+ DELETE FROM Orders WHERE Id = 4
+
+ SELECT * FROM DeletedOrders
