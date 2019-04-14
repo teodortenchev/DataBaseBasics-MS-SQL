@@ -130,8 +130,8 @@ WHERE se.Grade >= 4.00
 
  GO
  --Problem 18
- CREATE FUNCTION udf_ExamGradesToUpdate(@studentId INT, @grade DECIMAL(16,2)) 
-	RETURNS VARCHAR(50)
+ CREATE FUNCTION dbo.udf_ExamGradesToUpdate(@studentId INT, @grade DECIMAL(16,2)) 
+	RETURNS VARCHAR(100)
 AS
 	BEGIN
 		IF(@grade > 6)
@@ -146,12 +146,44 @@ AS
 			END
 
 		DECLARE @gradesCount INT = (SELECT COUNT(s.Id) FROM Students as s
-									JOIN StudentsSubjects as ss ON ss.StudentId = s.Id
+									JOIN StudentsExams as ss ON ss.StudentId = s.Id
 									WHERE ss.StudentId = @studentId AND ss.Grade BETWEEN @grade AND @grade + 0.5
 								)
 
 		
-		RETURN 'You have to update ' + CAST(@gradesCount AS VARCHAR(10)) + 'grades for the student ' + @studentNAME
+		RETURN 'You have to update ' + CAST(@gradesCount AS VARCHAR(10)) + ' grades for the student ' + @studentNAME
 	END 
 
+	GO
 SELECT dbo.udf_ExamGradesToUpdate(12, 5.50)
+
+GO
+--problem 19
+
+CREATE PROCEDURE usp_ExcludeFromSchool(@StudentId INT) AS
+	DECLARE @Student INT = (SELECT Id FROM Students WHERE Id = @StudentId)
+
+	IF(@Student IS NULL)
+		BEGIN
+			RAISERROR('This school has no student with the provided id!', 16, 1)
+			RETURN
+		END
+
+	DELETE FROM StudentsExams WHERE StudentId = @StudentId
+	DELETE FROM StudentsSubjects WHERE StudentId = @StudentId
+	DELETE FROM StudentsTeachers WHERE StudentId = @StudentId
+	DELETE FROM Students WHERE Id = @StudentId
+
+	--P20. Deleted Student
+
+CREATE TABLE ExcludedStudents(
+      StudentId INT,
+      StudentName NVARCHAR(150)
+)
+
+GO
+
+CREATE TRIGGER tr_LogDeletedStudents ON Students AFTER DELETE
+AS 
+	INSERT INTO ExcludedStudents
+	Select s.Id, s.FirstName + ' ' + s.LastName From deleted as s
